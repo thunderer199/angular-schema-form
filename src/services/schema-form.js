@@ -54,8 +54,12 @@ angular.module('schemaForm').provider('schemaForm',
         if (def) {
 
           // Do we have form defaults in the schema under the x-schema-form-attribute?
-          if (def.schema['x-schema-form'] && angular.isObject(def.schema['x-schema-form'])) {
-            def = angular.extend(def, def.schema['x-schema-form']);
+          var xSchema = def.schema['x-schema-form'];
+          if (xSchema && angular.isObject(xSchema)) {
+            if (xSchema.titleMap && !angular.isArray(xSchema)) {
+              xSchema.titleMap = canonicalTitleMap(xSchema.titleMap);
+            }
+            def = angular.extend(def, xSchema);
           }
 
           return def;
@@ -386,7 +390,7 @@ angular.module('schemaForm').provider('schemaForm',
         if (obj.type === 'checkbox' && angular.isUndefined(obj.schema['default'])) {
           obj.schema['default'] = false;
         }
-        
+
         // Special case: template type with tempplateUrl that's needs to be loaded before rendering
         // TODO: this is not a clean solution. Maybe something cleaner can be made when $ref support
         // is introduced since we need to go async then anyway
