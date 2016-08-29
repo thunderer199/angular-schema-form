@@ -99,17 +99,35 @@ angular.module('schemaForm').directive('sfArray', ['sfSelect', 'schemaForm', 'sf
 
           scope.appendToArray = function() {
             var len = list.length;
+            scope.tabLength = -1;
             var copy = scope.copyWithIndex(len);
             schemaForm.traverseForm(copy, function(part) {
 
               if (part.key) {
                 var def;
-                if (angular.isDefined(part['default'])) {
-                  def = part['default'];
-                }
-                if (angular.isDefined(part.schema) &&
-                    angular.isDefined(part.schema['default'])) {
-                  def = part.schema['default'];
+                var obj = angular.copy(scope.model);
+                var element = function getElem(obj, keys, i) {
+                  var res = null;
+                  if(i == keys.length) {
+                    res = obj;
+                  } else {
+                    if(obj) {
+                      res = getElem(obj[keys[i]], keys, ++i);
+                    } else {
+                      res = null;
+                    }
+                  }
+                  return res;
+                }(obj, part.key, 0);
+
+                if(element == null || element == '') {
+                  if (angular.isDefined(part['default'])) {
+                    def = part['default'];
+                  }
+                  if (angular.isDefined(part.schema) &&
+                      angular.isDefined(part.schema['default'])) {
+                    def = part.schema['default'];
+                  }
                 }
 
                 if (angular.isDefined(def)) {
@@ -138,6 +156,7 @@ angular.module('schemaForm').directive('sfArray', ['sfSelect', 'schemaForm', 'sf
 
           scope.deleteFromArray = function(index) {
             list.splice(index, 1);
+            scope.tabLength = list.length;
 
             // Trigger validation.
             scope.validateArray();
