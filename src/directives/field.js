@@ -231,10 +231,6 @@ angular.module('schemaForm').directive('sfField',
                       obj[form.key.slice(-1)] = [];
                     } else if (destroyStrategy === 'null') {
                       obj[form.key.slice(-1)] = null;
-                    } else if(scope.tabLength > -1) {
-                      if(scope.tabLength == 0) {
-                        delete obj[form.key.slice(-1)];
-                      }
                     } else {
                       delete obj[form.key.slice(-1)];
                     }
